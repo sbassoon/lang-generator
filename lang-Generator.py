@@ -1,13 +1,13 @@
 import random as r
 import math as m
 
-# NEXT STEP
-#
-# Implement double sound checking and "hard clusters" checking
-# hard clusters: anything violating sonority sequencing principle: https://en.wikipedia.org/wiki/Sonority_Sequencing_Principle
+# NEXT STEPS
 #
 # Consonant orthography styles
 # Vowel orthography styles
+#
+# hard clusters based on sonority sequencing principle: https://en.wikipedia.org/wiki/Sonority_Sequencing_Principle
+#   instead of indexing
 
 vowel_five_standard = ["a", "e", "i", "o", "u"]
 vowel_three_aiu = ["a", "i", "u"]
@@ -42,7 +42,7 @@ consonant_full = consonant_stops_full + consonant_fricatives_and_sibilants_full 
 
 vowlist = vowel_three_eou
 conlist = consonant_stops_full
-siblist = consonant_sibilants_full
+siblist = consonant_fricatives_and_sibilants_full
 liqlist = consonant_liquids_full
 finlist = consonant_nasals_full + consonant_fricatives_and_sibilants_full + consonant_stops_full
 
@@ -51,9 +51,10 @@ restricted_pairs = ["tq", "ʔx", "rl", "lr", "tn", "ʔn", "pb", "pn",
                     "tk", "pv", "pm", "dŋ", "pj", "ʔw", "dn", "dʒ",
                     "qg", "ʔð", "dʃ", "pz", "pʔ", "tx", "qŋ", "dm",
                     "ʔʃ", "pl", "ʔb", "qt", "pw", "qð", "gf", "pr",
-                    "pg", "pŋ", "pʒ", "ʔf", "qz", "kr", "pg", "bp"]
+                    "pg", "pŋ", "pʒ", "ʔf", "qz", "kr", "pg", "bp",
+                    "zp"]
 
-phonot = "TCVDF"
+phonot = "TCVL"
 check_doubles = True
 check_hard_clusters = True
 
@@ -76,16 +77,17 @@ def generateSyllables(consonants: list, vowels: list, sibilants: list, liquids: 
             if j != len(phonotype):
                 if p == "C":
                     # consonants
-                    consonant = consonants[m.floor(m.pow(r.random(), simple_consonant_factor) * len(consonants))]
+                    weighted_choice_factor = int(m.floor(m.pow(r.random(), simple_consonant_factor) * len(consonants)))
+                    consonant = consonants[weighted_choice_factor]
                     if (len(syllable) > 0):
                         if ((syllable[-1] + consonant) in restricted_pairs) and (check_hard_clusters is True):
                             while (syllable[-1] + consonant in restricted_pairs):
-                                consonant = consonants[m.floor(m.pow(r.random(), simple_consonant_factor) * len(consonants))]
+                                consonant = consonants[weighted_choice_factor]
                             syllable = syllable + consonant
                             j += 1
                         elif (consonant == syllable[-1]) and (check_doubles is True):
                             while (consonant == syllable[-1]):
-                                consonant = consonants[m.floor(m.pow(r.random(), simple_consonant_factor) * len(consonants))]
+                                consonant = consonants[weighted_choice_factor]
                             syllable = syllable + consonant
                             j += 1
                         else:
@@ -94,22 +96,23 @@ def generateSyllables(consonants: list, vowels: list, sibilants: list, liquids: 
                     else:
                         syllable = syllable + consonant
                         j += 1
-                        # syllable = checkRestrictions(syllable, check_doubles, check_hard_clusters)
                     if j == len(phonotype):
                         syllableList.append(syllable)
                 elif p == "D":
                     # consonants at probability
                     if r.random() < optional_factor:
-                        consonant = consonants[m.floor(m.pow(r.random(), simple_consonant_factor) * len(consonants))]
+                        weighted_choice_factor = int(
+                            m.floor(m.pow(r.random(), simple_consonant_factor) * len(consonants)))
+                        consonant = consonants[weighted_choice_factor]
                         if (len(syllable) > 0):
                             if ((syllable[-1] + consonant) in restricted_pairs) and (check_hard_clusters is True):
                                 while (syllable[-1] + consonant in restricted_pairs):
-                                    consonant = consonants[m.floor(m.pow(r.random(), simple_consonant_factor) * len(consonants))]
+                                    consonant = consonants[weighted_choice_factor]
                                 syllable = syllable + consonant
                                 j += 1
                             elif (consonant == syllable[-1]) and (check_doubles is True):
                                 while (consonant == syllable[-1]):
-                                    consonant = consonants[m.floor(m.pow(r.random(), simple_consonant_factor) * len(consonants))]
+                                    consonant = consonants[weighted_choice_factor]
                                 syllable = syllable + consonant
                                 j += 1
                             else:
@@ -118,7 +121,6 @@ def generateSyllables(consonants: list, vowels: list, sibilants: list, liquids: 
                         else:
                             syllable = syllable + consonant
                             j += 1
-                        #syllable = checkRestrictions(syllable, check_doubles, check_hard_clusters)
                     else:
                         j += 1
                     if j == len(phonotype):
@@ -313,15 +315,6 @@ def generateSyllables(consonants: list, vowels: list, sibilants: list, liquids: 
                         syllableList.append(syllable)
         i += 1
     return syllableList
-
-
-def checkRestrictions(syllable: str, doubles: bool, hard_cluster: bool):
-    for index, c in enumerate(syllable[:-1]):
-        if ((doubles == True) and (c == syllable[index + 1])) or (
-                (hard_cluster == True) and (c + syllable[index + 1] in restricted_pairs)):
-            print(syllable + " " + c + syllable[index + 1])
-            syllable = generateSyllables(conlist, vowlist, siblist, liqlist, liqlist, phonot, 1, 4, 0.4)[0]
-    return syllable
 
 
 if __name__ == '__main__':
