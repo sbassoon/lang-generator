@@ -54,13 +54,13 @@ restricted_pairs = ["tq", "ʔx", "rl", "lr", "tn", "ʔn", "pb", "pn",
                     "pg", "pŋ", "pʒ", "ʔf", "qz", "kr", "pg", "bp",
                     "zp"]
 
-phonot = "TCVL"
+phonot = "LVF"
 check_doubles = True
 check_hard_clusters = True
 
 
 def main():
-    sylList = generateSyllables(conlist, vowlist, siblist, liqlist, finlist, phonot, 20, 4, 0.5)
+    sylList = generateSyllables(conlist, vowlist, siblist, liqlist, finlist, phonot, 20, 1, 0.5)
     print(sylList)
 
 
